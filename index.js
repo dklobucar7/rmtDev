@@ -49,34 +49,69 @@ const submitHandler = (event) => {
   // blur input - suprotno od fokusa
   searchInputEl.blur();
 
+  // remove previous job items
+  jobListSearchEl.innerHTML = "";
+
   // render spinner
   spinnerSearchEl.classList.add("spinner--visible");
 
   // fetch search results
-  fetch("https://bytegrad.com/course-assets/js/2/api/jobs")
-    .then((res) => res.json())
+  fetch(`https://bytegrad.com/course-assets/js/2/api/jobs?search=${searchText}`)
+    .then((res) => {
+      if (!res.ok) {
+        // 400 - 599 status errors
+        console.log("Something went wrong");
+        return;
+      }
+      return res.json();
+    })
     .then((data) => {
+      const { jobItems } = data;
       // remove spinner
-      spinnerSearchEl.remove();
-      console.log(data);
+      spinnerSearchEl.classList.remove("spinner--visible");
 
-      // iterate
+      numberEl.textContent = jobItems.length;
 
-      // new HTML
-      //   const jobsItemHTML = `
-      //   <li></li>
+      // render job items in search job list
 
-      //   `;
-    });
+      jobItems.slice(0, 7).forEach((jobItem) => {
+        const newJobItemHTML = `
+                    <li class="job-item">
+                        <a class="job-item__link" href="${jobItem.id}">
+                            <div class="job-item__badge">${jobItem.badgeLetters}</div>
+                            <div class="job-item__middle">
+                                <h3 class="third-heading">${jobItem.title}</h3>
+                                <p class="job-item__company">${jobItem.company}</p>
+                                <div class="job-item__extras">
+                                    <p class="job-item__extra"><i class="fa-solid fa-clock job-item__extra-icon"></i> ${jobItem.duration}</p>
+                                    <p class="job-item__extra"><i class="fa-solid fa-money-bill job-item__extra-icon"></i> ${jobItem.salary}</p>
+                                    <p class="job-item__extra"><i class="fa-solid fa-location-dot job-item__extra-icon"></i> ${jobItem.location}</p>
+                                </div>
+                            </div>
+                            <div class="job-item__right">
+                                <i class="fa-solid fa-bookmark job-item__bookmark-icon"></i>
+                                <time class="job-item__time">${jobItem.daysAgo}d</time>
+                            </div>
+                        </a>
+                    </li>
+                `;
+        jobListSearchEl.insertAdjacentHTML("beforeend", newJobItemHTML);
+      });
+
+      //   data.jobItems
+      //     .forEach((jobItem) => {
+      //       const b = `
+      //     <li>
+      //     <p>${jobItem.id}</p>
+      //     <p>${jobItem.location}</p>
+      //     </li>
+      //     `;
+      //       jobListSearchEl.insertAdjacentHTML("beforeend", b);
+      //     })
+      //
+    })
+    //Network or Fetch error
+    .catch((error) => console.log(error));
 };
 
 searchFormEl.addEventListener("submit", submitHandler);
-
-fetch("https://bytegrad.com/course-assets/js/2/api/jobs")
-  .then((res) => res.json())
-  .then((data) => {
-    console.log(data.jobItems);
-    data.jobItems.forEach((jobItem) => {
-      console.log(jobItem.id);
-    });
-  });
