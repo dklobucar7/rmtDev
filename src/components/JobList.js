@@ -2,6 +2,7 @@ import {
   BASE_API_URL,
   jobListSearchEl,
   jobDetailsContentEl,
+  getData,
 } from "../common.js";
 
 // default import
@@ -37,7 +38,7 @@ const renderJobList = (jobItems) => {
   });
 };
 
-const clickHanlder = (event) => {
+const clickHanlder = async (event) => {
   // prevent default behavior - anchor tag nas odmah šalje na ID, a mi to ne želimo, nego želimo ostati na istoj stranici
   event.preventDefault();
 
@@ -64,33 +65,25 @@ const clickHanlder = (event) => {
   // mogli smo i ovako doći do ID-a
   // const id = document.querySelector(".job-item__link").getAttribute("href");
 
-  // fetch
-  fetch(`${BASE_API_URL}/jobs/${id}`)
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error(
-          "Resource issue (e.g. resource doesn't exist) or server issue"
-        );
-      }
-      return res.json();
-    })
-    .then((data) => {
-      // extract job item
-      const { jobItem } = data;
+  // fetch job item data
+  try {
+    const data = await getData(`${BASE_API_URL}/jobs/${id}`);
 
-      // remove spinner
-      renderSpinner("job-details");
+    // extract job item
+    const { jobItem } = data;
 
-      // render job details
-      renderJobDetails(jobItem);
-    })
-    .catch((error) => {
-      // remove spinner
-      renderSpinner("job-details");
+    // remove spinner
+    renderSpinner("job-details");
 
-      ////Network or Fetch problem, misspell a particular variable, trying to parse something not JSON as JSON
-      renderError(error.message);
-    });
+    // render job details
+    renderJobDetails(jobItem);
+  } catch (error) {
+    // remove spinner
+    renderSpinner("job-details");
+
+    ////Network or Fetch problem, misspell a particular variable, trying to parse something not JSON as JSON
+    renderError(error.message);
+  }
 };
 
 // job-list--search klasa

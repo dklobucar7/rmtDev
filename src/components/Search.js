@@ -4,6 +4,7 @@ import {
   searchFormEl,
   jobListSearchEl,
   numberEl,
+  getData,
 } from "../common.js";
 
 // default import
@@ -13,7 +14,7 @@ import renderJobList from "./JobList.js";
 
 // -- SEARCH COMPONENT --
 
-const submitHandler = (event) => {
+const submitHandler = async (event) => {
   // prevent default behavior
   event.preventDefault();
 
@@ -37,34 +38,28 @@ const submitHandler = (event) => {
   renderSpinner("search");
 
   // fetch search results
-  fetch(`${BASE_API_URL}/jobs?search=${searchText}`)
-    .then((res) => {
-      if (!res.ok) {
-        // 4xx - 5xx status code errors, problem with resource
-        throw new Error(
-          "Resource issue (e.g. resource doesn't exist) or server issue"
-        );
-      }
-      // parse a JSON
-      return res.json();
-    })
-    .then((data) => {
-      const { jobItems } = data;
-      // remove spinner
-      renderSpinner("search");
+  try {
+    // get data
+    const data = await getData(`${BASE_API_URL}/jobs?search=${searchText}`);
 
-      numberEl.textContent = jobItems.length;
+    // extract job items
+    const { jobItems } = data;
 
-      // render job items in search job list
-      renderJobList(jobItems);
-    })
+    // remove spinner
+    renderSpinner("search");
 
-    .catch((error) => {
-      // remove spinner
-      renderSpinner("search");
-      //Network or Fetch problem, misspell a particular variable, trying to parse something not JSON as JSON
-      renderError(error.message);
-    });
+    // render number of results
+    numberEl.textContent = jobItems.length;
+
+    // render job items in search job list
+    renderJobList(jobItems);
+  } catch (error) {
+    // remove spinner
+    renderSpinner("search");
+
+    //Network or Fetch problem, misspell a particular variable, trying to parse something not JSON as JSON
+    renderError(error.message);
+  }
 };
 
 searchFormEl.addEventListener("submit", submitHandler);
