@@ -8,7 +8,7 @@ import {
 import renderJobList from "./JobList.js";
 
 const clickHandler = (event) => {
-  // get cicked button element
+  // get clicked button element
   const clickedButtonEl = event.target.closest(".sorting__button");
 
   // stop function if no clicked button element
