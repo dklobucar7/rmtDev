@@ -4,6 +4,7 @@ import {
   jobListSearchEl,
   jobDetailsContentEl,
   getData,
+  RESULTS_PER_PAGE,
 } from "../common.js";
 
 // default import
@@ -19,7 +20,10 @@ const renderJobList = () => {
 
   // display job items
   state.searchJobItems
-    .slice(state.currentPage * 7 - 7, state.currentPage * 7)
+    .slice(
+      state.currentPage * RESULTS_PER_PAGE - RESULTS_PER_PAGE,
+      state.currentPage * RESULTS_PER_PAGE
+    )
     .forEach((jobItem) => {
       const newJobItemHTML = `
                   <li class="job-item">

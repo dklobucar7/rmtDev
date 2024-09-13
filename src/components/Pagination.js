@@ -6,11 +6,36 @@ import {
   paginationNumberNextEl,
   paginationNumberBackEl,
   numberEl,
+  RESULTS_PER_PAGE,
 } from "../common.js";
+
+import renderJobList from "./JobList.js";
 
 // -- PAGINATION COMPONENT --
 
-import renderJobList from "./JobList.js";
+const renderPaginationButtons = () => {
+  //display back button if we are on page 2 or further
+  if (state.currentPage >= 2) {
+    paginationBtnBackEl.classList.remove("pagination__button--hidden");
+  } else {
+    paginationBtnBackEl.classList.add("pagination__button--hidden");
+  }
+
+  // display next button if there are more job items on next page
+  if (state.searchJobItems.length - state.currentPage * RESULTS_PER_PAGE <= 0) {
+    paginationBtnNextEl.classList.add("pagination__button--hidden");
+  } else {
+    paginationBtnNextEl.classList.remove("pagination__button--hidden");
+  }
+
+  // update page numbers
+  paginationNumberNextEl.textContent = state.currentPage + 1;
+  paginationNumberBackEl.textContent = state.currentPage - 1;
+
+  // unfocus (blur) buttons
+  paginationBtnNextEl.blur();
+  paginationBtnBackEl.blur();
+};
 
 const clickHandler = (event) => {
   // get clicked button element
@@ -25,64 +50,13 @@ const clickHandler = (event) => {
   // update state (single source of truth)
   nextPage ? state.currentPage++ : state.currentPage--;
 
+  // render pagination buttons
+  renderPaginationButtons();
+
   // render job items for that page
   renderJobList();
-
-  
 };
 
 paginationEl.addEventListener("click", clickHandler);
 
-// const clickHandler = (event) => {
-
-//   // check if we clicked button--back or button--nex
-//   const buttonEl = clickedButtonEl.className.includes("--next") ? true : false;
-//   console.log(buttonEl);
-
-//   // check how many page we can have
-//   let numberOfPossiblePages = numberEl.textContent / 7;
-//   console.log(numberOfPossiblePages);
-
-//   if (buttonEl) {
-//     // -- NEXT BUTTON --
-
-//     // unhide back button
-//     paginationBtnBackEl.classList.remove("pagination__button--hidden");
-
-//     // counter for NEXT button
-//     let counterNextEl = paginationNumberNextEl.textContent;
-
-//     if (counterNextEl <= numberOfPossiblePages) {
-//       counterNextEl++;
-//       paginationNumberNextEl.textContent = counterNextEl;
-
-//       // counter for BACK button
-//       let counterBackEl = paginationNumberBackEl.textContent;
-//       if (counterNextEl > 3) {
-//         counterBackEl++;
-//         paginationNumberBackEl.textContent = counterBackEl;
-//       }
-//     }
-//     if(counterNextEl ==)
-//   } else {
-//     // -- BACK BUTTON --
-//     // counter for BACK button
-//     let counterBackEl = paginationNumberBackEl.textContent;
-
-//     if (counterBackEl > 1) {
-//       counterBackEl--;
-//       console.log(counterBackEl);
-//       paginationNumberBackEl.textContent = counterBackEl;
-
-//       // counter for NEXT button
-//       let counterNextEl = paginationNumberNextEl.textContent;
-//       counterNextEl--;
-//       paginationNumberNextEl.textContent = counterNextEl;
-//     } else {
-//       // hide back button
-//       paginationBtnBackEl.classList.add("pagination__button--hidden");
-//     }
-//   }
-// };
-
-// paginationEl.addEventListener("click", clickHandler);
+export default renderPaginationButtons;
