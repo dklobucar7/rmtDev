@@ -73,11 +73,14 @@ const clickHanlder = async (event) => {
   // get the id
   const id = jobItemEl.children[0].getAttribute("href");
 
+  // add id to url for Bookmark
+  history.pushState(null, "", `/#${id}`);
+
   // mogli smo i ovako doći do ID-a
   // const id = document.querySelector(".job-item__link").getAttribute("href");
 
-  // fetch job item data
   try {
+    // fetch job item data
     const data = await getData(`${BASE_API_URL}/jobs/${id}`);
 
     // extract job item
