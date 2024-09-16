@@ -1,4 +1,9 @@
-import { jobDetailsContentEl, BASE_API_URL, getData } from "../common.js";
+import {
+  jobDetailsContentEl,
+  BASE_API_URL,
+  state,
+  getData,
+} from "../common.js";
 
 import renderSpinner from "./Spinner.js";
 import renderJobDetails from "./JobDetails.js";
@@ -24,6 +29,9 @@ const loadHashChangeHandler = async () => {
       // extract job item
       const { jobItem } = data;
 
+      // update state
+      state.activeJobItem = jobItem;
+
       // remove spinner
       renderSpinner("job-details");
 
@@ -33,7 +41,7 @@ const loadHashChangeHandler = async () => {
       // remove spinner
       renderSpinner("job-details");
 
-      ////Network or Fetch problem, misspell a particular variable, trying to parse something not JSON as JSON
+      // Network or Fetch problem, misspell a particular variable, trying to parse something not JSON as JSON
       renderError(error.message);
     }
   }
