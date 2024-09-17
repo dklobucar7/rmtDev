@@ -94,9 +94,6 @@ const clickHanlder = async (event) => {
     (jobItem) => jobItem.id === +id
   );
 
-  console.log("DAAA");
-  console.log(state.activeJobItem);
-
   // add id to url for Bookmark
   history.pushState(null, "", `/#${id}`);
 
